@@ -7,7 +7,6 @@
 *.class
 *.classpath
 *.project
-*.mvn
 *mvnw
 *.cmd
 # Log file
