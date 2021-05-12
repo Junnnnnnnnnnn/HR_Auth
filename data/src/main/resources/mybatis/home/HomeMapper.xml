@@ -6,4 +6,12 @@
             now()
         from dual
     </select>
+    <select id="getLoginResult" resultType="Map" parameterType="Map">
+        select
+            a.MEMBER_ID,
+            a.MEMBER_NAME
+        from MEMBER a
+        where 1=1
+        and a.MEMBER_ID = #{id} and aes_decrypt(unhex(a.MEMBER_PASS),sha2(a.MEMBER_ID,512)) = #{pass}
+    </select>
 </mapper>

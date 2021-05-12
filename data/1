@@ -9,4 +9,13 @@ services:
     environment:
        MYSQL_ROOT_PASSWORD: 1234
     volumes:
-       - ../../Volumes/mysql:/var/lib/mysql
+       - /home:/var/lib/mysql
+  
+
+  boot_application:
+    image: wjsguswls71/test-spring-boot
+    ports:
+      - 8080:8080
+    depends_on:
+      - maria 
+ 
