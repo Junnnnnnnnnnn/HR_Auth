@@ -1,8 +1,13 @@
 package com.crawliing.data.home.model;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 public class RequestLoginModel {
     
+    @NotBlank(message = "아이디를 입력하세요.")
     private String id = "";
+    @NotEmpty(message = "비밀번호를 입력하세요.")
     private String pass = "";
 
     public String getId() {

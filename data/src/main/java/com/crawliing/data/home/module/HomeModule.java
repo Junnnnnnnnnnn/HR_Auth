@@ -10,9 +10,6 @@ import org.springframework.validation.FieldError;
 
 public class HomeModule {
     
-    @Autowired
-    private MessageSource messageSource;
-
     public Map<String,Object> getBindingResultMap(BindingResult result){
 
         Map<String,Object> errorMap = new HashMap<String,Object>();
