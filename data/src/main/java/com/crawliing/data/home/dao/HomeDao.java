@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface HomeDao {
     public String getTime();
     public Map<String,Object> getLoginResult(Map<String,Object> map);
+    public int updateToken(Map<String,Object> map);
 }

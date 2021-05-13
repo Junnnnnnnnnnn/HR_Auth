@@ -14,4 +14,12 @@
         where 1=1
         and a.MEMBER_ID = #{id} and aes_decrypt(unhex(a.MEMBER_PASS),sha2(a.MEMBER_ID,512)) = #{pass}
     </select>
+    <update id="updateToken" parameterType="Map">
+        update admin_apikey a
+        set a.TOKEN_KEY = #{token},a.START_DATE = now(),a.END_DATE = #{date},a.UPDATE_TIME = now()
+        where 1=1
+        and a.API_KEY = #{api_key}
+        and a.ADMIN_ID = #{id}
+    </update>
+    
 </mapper>
