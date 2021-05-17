@@ -14,6 +14,6 @@ public interface HomeDao {
     public String getTime();
     public Map<String,Object> getLoginResult(RequestLoginModel req);
     public int updateToken(Map<String,Object> map);
-    public int ckApiKey(RequestAuthModel req);
+    public int ckApiKey(String req);
 
 }

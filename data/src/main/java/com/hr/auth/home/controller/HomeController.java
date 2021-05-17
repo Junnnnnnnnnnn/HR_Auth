@@ -9,6 +9,7 @@ import com.hr.auth.home.service.HomeService;
 
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,24 +37,24 @@ public class HomeController {
         return modelMap;
     }
 
-    @ApiOperation(
-        value = "로그인 확인",
-        notes = "admin.gochigo.kr 에 가입되어 있는 회원 확인",
-        httpMethod = "POST",
-        protocols = "http"
-    )
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "로그인 아이디", required = true),
-        @ApiImplicitParam(name = "pass", value = "비밀번호", required = true)
-    })
-    @PostMapping("/login")
-    public ModelMap login(@RequestHeader(value="authentication") String token,
-                          @Valid @ModelAttribute RequestLoginModel req,
-                          BindingResult bindingResult){
-        ModelMap modelMap = new ModelMap();
-        modelMap = homeService.getLoginResult(token,req,bindingResult);
-        return modelMap;
-    }
+    // @ApiOperation(
+    //     value = "로그인 확인",
+    //     notes = "admin.gochigo.kr 에 가입되어 있는 회원 확인",
+    //     httpMethod = "POST",
+    //     protocols = "http"
+    // )
+    // @ApiImplicitParams({
+    //     @ApiImplicitParam(name = "id", value = "로그인 아이디", required = true),
+    //     @ApiImplicitParam(name = "pass", value = "비밀번호", required = true)
+    // })
+    // @PostMapping("/login")
+    // public ModelMap login(@RequestHeader(value="authentication") String token,
+    //                       @Valid @ModelAttribute RequestLoginModel req,
+    //                       BindingResult bindingResult){
+    //     ModelMap modelMap = new ModelMap();
+    //     modelMap = homeService.getLoginResult(token,req,bindingResult);
+    //     return modelMap;
+    // }
 
     @ApiOperation(
         value = "토큰 발급",
@@ -62,7 +63,8 @@ public class HomeController {
         protocols = "http"
     )
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "토큰 발급 아이디", required = true),
+        @ApiImplicitParam(name = "id", value = "아이디", required = true),
+        @ApiImplicitParam(name = "pass", value = "패스워드", required = true),
         @ApiImplicitParam(name = "api_key", value = "api 키", required = true)
     })
     @PostMapping("/token")
@@ -71,23 +73,4 @@ public class HomeController {
         modelMap = homeService.getToken(req,bindingResult);
         return modelMap;
     }
-
-    @ApiOperation(
-        value = "토큰 발급",
-        notes = "API 사용을 위한 토큰",
-        httpMethod = "POST",
-        protocols = "http"
-    )
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "토큰 발급 아이디", required = true),
-        @ApiImplicitParam(name = "api_key", value = "api 키", required = true)
-    })
-    @PostMapping("/tokenTest")
-    public ModelMap tokenTest(@Valid @ModelAttribute RequestAuthModel req, BindingResult bindingResult){
-        ModelMap modelMap = new ModelMap();
-        modelMap = homeService.getToken(req,bindingResult);
-        return modelMap;
-    }
-
-
 }

@@ -33,32 +33,33 @@ public class HomeService {
         return modelMap;
     }
 
-    public ModelMap getLoginResult(String token, RequestLoginModel req, BindingResult bindingResult){
-        ModelMap modelMap = new ModelMap();
-        if(!bindingResult.hasErrors()){
-            if(homeDao.getLoginResult(req) != null){
-                modelMap.put("condition", true);
-                modelMap.put("meassge","로그인 성공");
-            }else{
-                modelMap.put("condition", false);
-                modelMap.put("meassge","아이디 혹은 비밀번호가 잘못되었습니다.");
-            }
-        }else{
-            modelMap.put("condition", false);
-            modelMap.put("meassge", module.getBindingResultMap(bindingResult));
-        }
-        return modelMap;
-    }
+    // public ModelMap getLoginResult(String token, RequestLoginModel req, BindingResult bindingResult){
+    //     ModelMap modelMap = new ModelMap();
+    //     if(!bindingResult.hasErrors()){
+    //         if(homeDao.getLoginResult(req) != null){
+    //             modelMap.put("condition", true);
+    //             modelMap.put("meassge","로그인 성공");
+    //         }else{
+    //             modelMap.put("condition", false);
+    //             modelMap.put("meassge","아이디 혹은 비밀번호가 잘못되었습니다.");
+    //         }
+    //     }else{
+    //         modelMap.put("condition", false);
+    //         modelMap.put("meassge", module.getBindingResultMap(bindingResult));
+    //     }
+    //     return modelMap;
+    // }
 
     public ModelMap getToken(RequestAuthModel model, BindingResult bindingResult){
+        System.out.println("model ::: " + model);
         ModelMap modelMap = new ModelMap();
         UUID token = UUID.randomUUID();
+
         if(!bindingResult.hasErrors()){
-            System.out.println(model.getApi_key());
-            if(homeDao.ckApiKey(model) == 1){
+            if(homeDao.ckApiKey(model.getApi_key()) == 1){
                 Map<String,Object> map = new HashMap<String,Object>();
                 map.put("id", model.getId());
-                map.put("api_key",model.getApi_key());
+                map.put("pass", model.getPass());
                 map.put("token", token.toString());
                 map.put("date",addDateHour(10));
                 if(homeDao.updateToken(map) == 1){
@@ -67,7 +68,7 @@ public class HomeService {
                     modelMap.put("token", token.toString());
                 }else{
                     modelMap.put("condition", false);
-                    modelMap.put("message","데이터베이스 커넥션 에러");
+                    modelMap.put("message","아이디 혹은 패스워드가 다름니다.");
                     modelMap.put("token", null);
                 }
             }else{
