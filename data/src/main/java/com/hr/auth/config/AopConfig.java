@@ -1,4 +1,4 @@
-package com.crawliing.data.config;
+package com.hr.auth.config;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

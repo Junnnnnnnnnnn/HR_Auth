@@ -1,24 +1,15 @@
-package com.crawliing.data.home.controller;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.hr.auth.home.controller;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import com.crawliing.data.home.model.RequestAuthModel;
-import com.crawliing.data.home.model.RequestLoginModel;
-import com.crawliing.data.home.module.HomeModule;
-import com.crawliing.data.home.service.HomeService;
-import com.crawliing.data.home.validator.HomeValidator;
-import com.fasterxml.jackson.core.sym.Name;
+import com.hr.auth.home.model.RequestAuthModel;
+import com.hr.auth.home.model.RequestLoginModel;
+import com.hr.auth.home.service.HomeService;
 
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -29,7 +20,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 
 @Api(value = "HomeController", description = "컨트롤러")
 @RestController("homeController")
@@ -45,6 +35,7 @@ public class HomeController {
         modelMap = homeService.getTime();
         return modelMap;
     }
+
     @ApiOperation(
         value = "로그인 확인",
         notes = "admin.gochigo.kr 에 가입되어 있는 회원 확인",
@@ -57,16 +48,10 @@ public class HomeController {
     })
     @PostMapping("/login")
     public ModelMap login(@RequestHeader(value="authentication") String token,
-                         @Valid @ModelAttribute RequestLoginModel req,
-                         BindingResult bindingResult){
-        Map<String,Object> map = new HashMap<String,Object>(){
-            {
-                put("id", req.getId());
-                put("pass", req.getPass());
-            }
-        };
+                          @Valid @ModelAttribute RequestLoginModel req,
+                          BindingResult bindingResult){
         ModelMap modelMap = new ModelMap();
-        modelMap = homeService.getLoginResult(map,bindingResult);
+        modelMap = homeService.getLoginResult(token,req,bindingResult);
         return modelMap;
     }
 
@@ -82,6 +67,23 @@ public class HomeController {
     })
     @PostMapping("/token")
     public ModelMap token(@Valid @ModelAttribute RequestAuthModel req, BindingResult bindingResult){
+        ModelMap modelMap = new ModelMap();
+        modelMap = homeService.getToken(req,bindingResult);
+        return modelMap;
+    }
+
+    @ApiOperation(
+        value = "토큰 발급",
+        notes = "API 사용을 위한 토큰",
+        httpMethod = "POST",
+        protocols = "http"
+    )
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "id", value = "토큰 발급 아이디", required = true),
+        @ApiImplicitParam(name = "api_key", value = "api 키", required = true)
+    })
+    @PostMapping("/tokenTest")
+    public ModelMap tokenTest(@Valid @ModelAttribute RequestAuthModel req, BindingResult bindingResult){
         ModelMap modelMap = new ModelMap();
         modelMap = homeService.getToken(req,bindingResult);
         return modelMap;

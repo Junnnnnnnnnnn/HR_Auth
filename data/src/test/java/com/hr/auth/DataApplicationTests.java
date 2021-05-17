@@ -1,18 +1,15 @@
-package com.crawliing.data;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.hr.auth;
 
 import javax.annotation.Resource;
 
-import com.crawliing.data.home.service.HomeService;
+import com.hr.auth.home.module.HomeModule;
+import com.hr.auth.home.service.HomeService;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ch.qos.logback.classic.Logger;
-import io.sentry.Sentry;
 
 @SpringBootTest
 class DataApplicationTests {
@@ -21,12 +18,11 @@ class DataApplicationTests {
 
 	@Resource(name="homeService")
 	private HomeService homeService;
-
+	@Resource(name="homeModule")
+	private HomeModule homeModulel;
 	@Test
 	void contextLoads() {
-
-
-
+		System.out.println(homeModulel.getSHA512("wjsguswls71@naver.com"));
 	}	
 
 }

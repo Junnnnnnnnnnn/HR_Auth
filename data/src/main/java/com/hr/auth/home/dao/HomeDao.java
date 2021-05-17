@@ -1,6 +1,9 @@
-package com.crawliing.data.home.dao;
+package com.hr.auth.home.dao;
 
 import java.util.Map;
+
+import com.hr.auth.home.model.RequestAuthModel;
+import com.hr.auth.home.model.RequestLoginModel;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository("homeDao")
 public interface HomeDao {
     public String getTime();
-    public Map<String,Object> getLoginResult(Map<String,Object> map);
+    public Map<String,Object> getLoginResult(RequestLoginModel req);
     public int updateToken(Map<String,Object> map);
+    public int ckApiKey(RequestAuthModel req);
+
 }

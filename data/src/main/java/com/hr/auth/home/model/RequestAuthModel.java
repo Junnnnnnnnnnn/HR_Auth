@@ -1,4 +1,4 @@
-package com.crawliing.data.home.model;
+package com.hr.auth.home.model;
 
 import javax.validation.constraints.NotBlank;
 

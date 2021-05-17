@@ -1,4 +1,4 @@
-package com.crawliing.data.home.service;
+package com.hr.auth.home.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,9 +9,10 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import com.crawliing.data.home.dao.HomeDao;
-import com.crawliing.data.home.model.RequestAuthModel;
-import com.crawliing.data.home.module.HomeModule;
+import com.hr.auth.home.dao.HomeDao;
+import com.hr.auth.home.model.RequestAuthModel;
+import com.hr.auth.home.model.RequestLoginModel;
+import com.hr.auth.home.module.HomeModule;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,10 @@ public class HomeService {
         return modelMap;
     }
 
-    public ModelMap getLoginResult(Map<String,Object> map, BindingResult bindingResult){
+    public ModelMap getLoginResult(String token, RequestLoginModel req, BindingResult bindingResult){
         ModelMap modelMap = new ModelMap();
         if(!bindingResult.hasErrors()){
-            if(homeDao.getLoginResult(map) != null){
+            if(homeDao.getLoginResult(req) != null){
                 modelMap.put("condition", true);
                 modelMap.put("meassge","로그인 성공");
             }else{
@@ -54,7 +55,7 @@ public class HomeService {
         UUID token = UUID.randomUUID();
         if(!bindingResult.hasErrors()){
             System.out.println(model.getApi_key());
-            if(model.getApi_key().equals("1234")){
+            if(homeDao.ckApiKey(model) == 1){
                 Map<String,Object> map = new HashMap<String,Object>();
                 map.put("id", model.getId());
                 map.put("api_key",model.getApi_key());

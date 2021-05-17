@@ -1,6 +1,6 @@
-package com.crawliing.data.home.validator;
+package com.hr.auth.home.validator;
 
-import com.crawliing.data.home.model.RequestLoginModel;
+import com.hr.auth.home.model.RequestLoginModel;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
