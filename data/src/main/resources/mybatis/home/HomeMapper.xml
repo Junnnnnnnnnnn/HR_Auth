@@ -28,5 +28,11 @@
         where 1=1
         and a.API_KEY = #{api_key}
     </select>
+    <select id="getMember" resultType="ResponseMemberModel" parameterType="String">
+        select *
+        from MEMBER a
+        where 1=1
+        and a.MEMBER_ID = #{member_id}
+    </select>
     
 </mapper>

@@ -2,6 +2,9 @@ package com.hr.auth.home.module;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,20 +25,4 @@ public class HomeModule {
 
         return errorMap;
     }
-
-    public String getSHA512(String input) {
-
-        String toReturn = null;
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-512");
-            digest.reset();
-            digest.update(input.getBytes("utf8"));
-            toReturn = String.format("%0128x", new BigInteger(1, digest.digest()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return toReturn;
-    }
-
 }

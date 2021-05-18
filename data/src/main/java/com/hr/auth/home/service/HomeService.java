@@ -9,11 +9,15 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hr.auth.home.dao.HomeDao;
 import com.hr.auth.home.model.RequestAuthModel;
 import com.hr.auth.home.model.RequestLoginModel;
+import com.hr.auth.home.model.ResponseMemberModel;
+import com.hr.auth.home.module.HomeJwtModule;
 import com.hr.auth.home.module.HomeModule;
 
+import org.apache.ibatis.type.TypeReference;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -25,7 +29,10 @@ public class HomeService {
     
     @Resource(name = "homeDao")
     private HomeDao homeDao;
-    private HomeModule module = new HomeModule();
+    @Resource(name = "homeModule")
+    private HomeModule module;
+    @Resource(name = "homeJwtModule")
+    private HomeJwtModule jwt;
 
     public ModelMap getTime(){
         ModelMap modelMap = new ModelMap();
@@ -33,53 +40,41 @@ public class HomeService {
         return modelMap;
     }
 
-    // public ModelMap getLoginResult(String token, RequestLoginModel req, BindingResult bindingResult){
-    //     ModelMap modelMap = new ModelMap();
-    //     if(!bindingResult.hasErrors()){
-    //         if(homeDao.getLoginResult(req) != null){
-    //             modelMap.put("condition", true);
-    //             modelMap.put("meassge","로그인 성공");
-    //         }else{
-    //             modelMap.put("condition", false);
-    //             modelMap.put("meassge","아이디 혹은 비밀번호가 잘못되었습니다.");
-    //         }
-    //     }else{
-    //         modelMap.put("condition", false);
-    //         modelMap.put("meassge", module.getBindingResultMap(bindingResult));
-    //     }
-    //     return modelMap;
-    // }
-
     public ModelMap getToken(RequestAuthModel model, BindingResult bindingResult){
         System.out.println("model ::: " + model);
         ModelMap modelMap = new ModelMap();
-        UUID token = UUID.randomUUID();
-
+        String accessToken = new String();
+        String refreshToken = jwt.createRefreshToken(model.getId());
         if(!bindingResult.hasErrors()){
             if(homeDao.ckApiKey(model.getApi_key()) == 1){
                 Map<String,Object> map = new HashMap<String,Object>();
                 map.put("id", model.getId());
                 map.put("pass", model.getPass());
-                map.put("token", token.toString());
+                map.put("token", refreshToken);
                 map.put("date",addDateHour(10));
                 if(homeDao.updateToken(map) == 1){
+                    accessToken = jwt.createAccessToken("member", homeDao.getMember(model.getId()));
                     modelMap.put("condition", true);
                     modelMap.put("message","토큰 발급 완료");
-                    modelMap.put("token", token.toString());
+                    modelMap.put("accessToken", accessToken);
+                    modelMap.put("refreshToken", refreshToken);
                 }else{
                     modelMap.put("condition", false);
                     modelMap.put("message","아이디 혹은 패스워드가 다름니다.");
-                    modelMap.put("token", null);
+                    modelMap.put("accessToken", null);
+                    modelMap.put("refreshToken", null);
                 }
             }else{
                 modelMap.put("condition", false);
                 modelMap.put("message","api 키가 다릅니다.");
-                modelMap.put("token", null);
+                modelMap.put("accessToken", null);
+                modelMap.put("refreshToken", null);
             }
         }else{
             modelMap.put("condition",false);
             modelMap.put("message",module.getBindingResultMap(bindingResult));
-            modelMap.put("token",null);
+            modelMap.put("accessToken", null);
+            modelMap.put("refreshToken", null);
         }
 
         return modelMap;
@@ -96,5 +91,62 @@ public class HomeService {
         expireDate = sdf.format(cal.getTime());
 
         return expireDate;
+    }
+
+    public ModelMap reIssAccessToken(String access,String refresh){
+        ModelMap modelMap = new ModelMap();
+        @SuppressWarnings("all")
+        Map<String,Object> userInfo = (Map<String,Object>)jwt.get(access).get("member");
+        System.out.println("ID ::: " + userInfo.get("id"));
+        System.out.println("PASS ::: " + userInfo.get("pass"));
+
+        return modelMap;
+
+    }
+
+    public boolean validate(Long exp){
+        boolean condition = false;
+        Long now = System.currentTimeMillis();
+
+        if(now < exp){
+            condition = true;
+        }
+
+        return condition;
+    }
+
+    public ModelMap refreshAccessToken(String access, String refresh){
+        ModelMap modelMap = new ModelMap();
+        ObjectMapper mapper = new ObjectMapper();
+        Long accessExp = Long.parseLong(String.valueOf(jwt.get(access).get("exp")));
+        ResponseMemberModel member = mapper.convertValue(jwt.get(access).get("member"), ResponseMemberModel.class) ;
+        if(!validate(accessExp)){
+            if(jwt.get(refresh).get(member.getMember_id()) != null){
+                @SuppressWarnings("unchecked")
+                Map<String,Object> refreshValiDate = (Map<String,Object>) jwt.get(refresh).get(member.getMember_id());
+                Long refreshExp = Long.parseLong(String.valueOf(refreshValiDate.get("exp")));
+                if(!validate(refreshExp)){
+                    modelMap.put("condition", false);
+                    modelMap.put("message", "토큰이 만료되었습니다. 로그인을 통해 재갱신 해야합니다.");
+                    modelMap.put("token", null);
+                }else{
+                    modelMap.put("condition",true);
+                    modelMap.put("message","토큰이 갱신되었습니다.");
+                    modelMap.put("token",jwt.createAccessToken("member", member));
+                }
+            }else{
+                modelMap.put("condition",false);
+                modelMap.put("message","토큰이 변조됬거나 휴효하지 않습니다. 로그인을 통해 재갱신 해야합니다.");
+                modelMap.put("token",null);
+            }
+        }else{
+            modelMap.put("condition",true);
+            modelMap.put("message","토큰이 갱신되었습니다.");
+            modelMap.put("token",jwt.createAccessToken("member", member));
+        }
+        
+
+
+        return modelMap;
     }
 }
