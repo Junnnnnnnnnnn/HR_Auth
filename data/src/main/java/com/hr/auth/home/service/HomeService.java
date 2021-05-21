@@ -37,9 +37,9 @@ public class HomeService {
 
     public ModelMap getToken(RequestAuthModel model, BindingResult bindingResult){
         ModelMap modelMap = new ModelMap();
-        String accessToken = new String();
-        String refreshToken = jwt.createRefreshToken(model.getId());
         if(!bindingResult.hasErrors()){
+            String accessToken = new String();
+            String refreshToken = jwt.createRefreshToken(model.getId());
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("id", model.getId());
             map.put("pass", model.getPass());
