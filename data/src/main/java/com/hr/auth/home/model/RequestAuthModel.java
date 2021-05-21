@@ -8,8 +8,6 @@ public class RequestAuthModel {
     private String id = "";
     @NotBlank(message="패스워드를 입력해주세요")
     private String pass = "";
-    @NotBlank(message="api 키를 입력하세요")
-    private String api_key = "";
 
     public String getId() {
         return id;
@@ -17,14 +15,6 @@ public class RequestAuthModel {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getApi_key() {
-        return api_key;
-    }
-
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
     }
 
     public String getPass() {
@@ -37,7 +27,7 @@ public class RequestAuthModel {
 
     @Override
     public String toString() {
-        return "RequestAuthModel [api_key=" + api_key + ", id=" + id + ", pass=" + pass + "]";
+        return "RequestAuthModel [id=" + id + ", pass=" + pass + "]";
     }
 
 }

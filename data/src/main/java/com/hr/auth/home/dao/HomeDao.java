@@ -17,5 +17,6 @@ public interface HomeDao {
     public int updateToken(Map<String,Object> map);
     public int ckApiKey(String req);
     public ResponseMemberModel getMember(String member_id);
+    public String getMemberId(String refreshToken);
 
 }

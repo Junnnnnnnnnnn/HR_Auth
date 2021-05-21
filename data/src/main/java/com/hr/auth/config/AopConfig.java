@@ -16,8 +16,6 @@ public class AopConfig {
     public Object testAop(ProceedingJoinPoint pjp) throws Throwable{
         Logger log = (Logger) LoggerFactory.getLogger(pjp.getTarget().getClass());
         log.info("/{}",pjp.getSignature().getName());
-
-
         return pjp.proceed();
     }
 }

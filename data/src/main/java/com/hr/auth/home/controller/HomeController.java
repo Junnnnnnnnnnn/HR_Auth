@@ -1,6 +1,9 @@
 package com.hr.auth.home.controller;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.hr.auth.home.model.RequestAuthModel;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -47,12 +52,49 @@ public class HomeController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "id", value = "아이디", required = true),
         @ApiImplicitParam(name = "pass", value = "패스워드", required = true),
-        @ApiImplicitParam(name = "api_key", value = "api 키", required = true)
     })
     @PostMapping("/token")
-    public ModelMap token(@Valid @ModelAttribute RequestAuthModel req, BindingResult bindingResult){
+    public ModelMap token(@Valid @ModelAttribute RequestAuthModel req, BindingResult bindingResult, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization");
+
+        System.out.println("--------------------------------------------||token");
+
         ModelMap modelMap = new ModelMap();
         modelMap = homeService.getToken(req,bindingResult);
+        return modelMap;
+    }
+
+    @ApiOperation(
+        value = "토큰 재발급",
+        notes = "access 토큰 만료 시 재갱신",
+        httpMethod = "POST",
+        protocols = "http"
+    )
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "access", value = "access token", required = true),
+        @ApiImplicitParam(name = "refresh", value = "refresh token", required = true)
+    })
+    @PostMapping("/refreshAccessToken")
+    public ModelMap refreshAccessToken(@RequestParam String access,
+                                       @RequestParam String refresh){
+        ModelMap modelMap = new ModelMap();
+        modelMap = homeService.refreshAccessToken(access,refresh);
+        return modelMap;
+    }
+
+    @ApiOperation(
+        value = "토큰 상태 확인",
+        notes = "토큰 상태확인을 condition / remain 으로 확인 할 수 있다.",
+        httpMethod = "POST",
+        protocols = "http"
+    )
+    @ApiImplicitParam(name = "access", value = "Access Token", required = true)
+    @PostMapping("/statusToken")
+    public ModelMap statusToken(@RequestParam String access){
+        ModelMap modelMap = new ModelMap();
+        modelMap = homeService.statusToken(access);
         return modelMap;
     }
 }
