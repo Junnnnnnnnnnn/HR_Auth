@@ -1,0 +1,40 @@
+package com.hr.auth;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.annotation.Resource;
+
+import com.hr.auth.home.dao.HomeDao;
+import com.hr.auth.home.model.RequestAuthModel;
+import com.hr.auth.home.module.HomeJwtModule;
+import com.hr.auth.home.module.HomeModule;
+import com.hr.auth.home.service.HomeService;
+
+import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import ch.qos.logback.classic.Logger;
+
+@SpringBootTest
+class DataApplicationTests {
+
+	private final static Logger log = (Logger) LoggerFactory.getLogger(DataApplicationTests.class);
+
+	@Resource(name="homeService")
+	private HomeService homeService;
+	@Resource(name="homeDao")
+	private HomeDao homeDao;
+	@Resource(name="homeModule")
+	private HomeModule homeModulel;
+	@Resource(name="homeJwtModule")
+	private HomeJwtModule jwt;
+	@Test
+	void contextLoads() {
+		System.out.println(homeService.refreshAccessToken(
+			"eyJ0eXBlIjoiSldUIiwicmVxRGF0ZSI6MTYyMTMyNzMzNTU5MiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJhY2Nlc3MiLCJpYXQiOjE2MjEzMjczMzU1OTIsImV4cCI6MTYyMTMyOTEzNTU5MiwibWVtYmVyIjp7Im1lbWJlcl9pZCI6InlvdGRhcmsiLCJtZW1iZXJfbmFtZSI6IuynhOynhOyekOudvCIsIm1lbWJlcl9wYXNzIjoiOEQwMUJENEMzMzBBQUIxRURBMzE3MDQ4QjM4QjMzMTkiLCJtZW1iZXJfcm9sZSI6IlJPTEVfVVNFUiIsIm1lbWJlcl9jZXJ0IjoiIiwibWVtYmVyX3NpdGUiOiIiLCJtZW1iZXJfa2V5IjoiIiwibWVtYmVyX3Rva2VuIjoiZXlKMGVYQmxJam9pU2xkVUlpd2ljbVZ4UkdGMFpTSTZNVFl5TVRNeU56TXpOVFUzT0N3aVlXeG5Jam9pU0ZNeU5UWWlmUS5leUp6ZFdJaU9pSnlaV1p5WlhOb0lpd2llVzkwWkdGeWF5STZleUpsZUhBaU9qRTJNakU1TXpJeE16VTFOemNzSW1saGRDSTZNVFl5TVRNeU56TXpOVFUzTjMxOS42Z2pzTktRSXY2b002VTlpTHI0Mnk4ZGp5elBDREx0T0RSTHdtb3pDeGg0IiwibWVtYmVyX3Bob3RvIjoiIiwibWVtYmVyX3Bob25lIjoiIiwibWVtYmVyX2FkZHJfYmFzaWMiOiIiLCJtZW1iZXJfYWRkcl9kZXRhaWwiOiIiLCJtZW1iZXJfc3RhdHVzIjoiWSIsIm1lbWJlcl92aXNpdCI6IjIwMjEtMDUtMTMgMTQ6MjQ6MjcuMCIsInNob3BfY29kZSI6IiIsIm1lbWJlcl9wb3NfeCI6MC4wLCJtZW1iZXJfcG9zX3kiOjAuMCwicGFzc190aW1lIjoiMjAyMS0wNS0xMyAxNDoyNDoyOS4wIiwiY2VydF90aW1lIjoiMjAyMS0wNS0xMyAxNDoyNDozMC4wIiwiaW5wdXRfdGltZSI6IjIwMjEtMDUtMTMgMTQ6MjQ6MzEuMCIsInVwZGF0ZV90aW1lIjoiMjAyMS0wNS0xMyAxNDoyNDozMy4wIn19.Pdptsr0p0aHMrLCtps7-R6qYyH1BMvWAZTAkvsFQyCg",
+			"eyJ0eXBlIjoiSldUIiwicmVxRGF0ZSI6MTYyMTMyNzMzNTU3OCwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJyZWZyZXNoIiwieW90ZGFyayI6eyJleHAiOjE2MjE5MzIxMzU1NzcsImlhdCI6MTYyMTMyNzMzNTU3N319.6gjsNKQIv6oM6U9iLr42y8djyzPCDLtODRLwmozCxh4"));
+		
+	}
+}
