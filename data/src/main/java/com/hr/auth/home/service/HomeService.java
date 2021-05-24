@@ -1,17 +1,19 @@
 package com.hr.auth.home.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hr.auth.home.dao.HomeDao;
+import com.hr.auth.home.model.MemberModel;
 import com.hr.auth.home.model.RequestAuthModel;
-import com.hr.auth.home.model.ResponseMemberModel;
 import com.hr.auth.home.module.HomeJwtModule;
 import com.hr.auth.home.module.HomeModule;
 
@@ -70,7 +72,7 @@ public class HomeService {
         ModelMap modelMap = new ModelMap();
         ObjectMapper mapper = new ObjectMapper();
         Long accessExp = Long.parseLong(String.valueOf(jwt.get(access).get("exp")));
-        ResponseMemberModel member = mapper.convertValue(jwt.get(access).get("member"), ResponseMemberModel.class) ;
+        MemberModel member = mapper.convertValue(jwt.get(access).get("member"), MemberModel.class) ;
         if(!validate(accessExp)){
             if(jwt.get(refresh).get(member.getMember_id()) != null && jwt.get(refresh).get(homeDao.getMemberId(refresh)) != null){
                 @SuppressWarnings("unchecked")
@@ -95,6 +97,32 @@ public class HomeService {
             modelMap.put("message","토큰이 갱신되었습니다.");
             modelMap.put("token",jwt.createAccessToken("member", member));
         }
+        return modelMap;
+    }
+
+    public ModelMap signUp(MemberModel model){
+        ModelMap modelMap = new ModelMap();
+        if(homeDao.getMember(model.getMember_id()) == null){
+            String token = jwt.createAccessToken("email", model.getMember_id());
+            String[] emails = {model.getMember_id()};
+            model.setMember_cert(token);
+            if(module.sendNaverMail("[함께라면] 회원가입 인증메일", "아래 문장을 복사한뒤 붙혀 넣으세요<br>" + token, emails)){
+                if(homeDao.insertMember(model) > 0){
+                    modelMap.put("condition", true);
+                    modelMap.put("message", "인증 메일이 발송 되었습니다.");
+                }else{
+                    modelMap.put("condition", false);
+                    modelMap.put("message", "시스템 오류입니다.");
+                }
+            }else{
+                modelMap.put("condition", false);
+                modelMap.put("message", "메일 발송 오류입니다.");
+            }
+        }else{
+            modelMap.put("condition", false);
+            modelMap.put("message","이미 등록된 회원입니다.");
+        }
+
         return modelMap;
     }
 
@@ -148,4 +176,29 @@ public class HomeService {
         modelMap.put("second", sdfSs.format(remain));
         return modelMap;
     }
+
+    public ModelMap ckEmailToken(String token){
+        ModelMap modelMap = new ModelMap();
+        Long exp = Long.parseLong(String.valueOf(jwt.get(token).get("exp")));
+        String member_id = String.valueOf(jwt.get(token).get("email"));
+        if(validate(exp)){
+            if(homeDao.updateMemberStatus("Y",member_id) > 0){
+                modelMap.put("condition", true);
+                modelMap.put("message", "정상적으로 가입 되었습니다.");
+            }else{
+                modelMap.put("condition", false);
+                modelMap.put("message", "시스템 오류");
+            }
+        }else{
+            if(homeDao.deleteMember(member_id) > 0){
+                modelMap.put("condition", false);
+                modelMap.put("message", "인증메일이 만료되었습니다. 회원가입을 다시 해주세요");
+            }else{
+                modelMap.put("condition", false);
+                modelMap.put("message", "시스템 오류");
+            }
+        }
+        return modelMap;
+    }
+
 }

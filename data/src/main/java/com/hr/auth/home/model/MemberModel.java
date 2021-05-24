@@ -1,6 +1,6 @@
 package com.hr.auth.home.model;
 
-public class ResponseMemberModel {
+public class MemberModel {
 
     private String member_id = null;
 	private String member_name = "";

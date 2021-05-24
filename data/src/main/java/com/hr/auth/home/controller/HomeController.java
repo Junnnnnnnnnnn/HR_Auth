@@ -1,26 +1,20 @@
 package com.hr.auth.home.controller;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.hr.auth.home.model.MemberModel;
 import com.hr.auth.home.model.RequestAuthModel;
-import com.hr.auth.home.model.RequestLoginModel;
 import com.hr.auth.home.service.HomeService;
 
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -95,6 +89,40 @@ public class HomeController {
     public ModelMap statusToken(@RequestParam String access){
         ModelMap modelMap = new ModelMap();
         modelMap = homeService.statusToken(access);
+        return modelMap;
+    }
+
+    @ApiOperation(
+        value = "회원가입",
+        notes = "값을 받아 인증 토큰을 naver smtp를 통해 전달",
+        httpMethod = "POST",
+        protocols = "http"
+    )
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "member_id", value="아이디", required = true),
+        @ApiImplicitParam(name = "member_pass", value="비밀번호", required = true),
+        @ApiImplicitParam(name = "member_name", value="이름", required = true),
+        @ApiImplicitParam(name = "member_phone", value="전화번호", required = true),
+        @ApiImplicitParam(name = "member_photo", value="프로필 사진", required = false),
+    })
+    @PostMapping("/signUp")
+    public ModelMap signUp (@ModelAttribute MemberModel model){
+        ModelMap modelMap = new ModelMap();
+        modelMap = homeService.signUp(model);
+        return modelMap;
+    }
+
+    @ApiOperation(
+        value = "회원가입 인증 토큰 체크",
+        notes = "메일로 보낸 인증 토큰을 체크하여 정식 사용자로 변환",
+        httpMethod = "POST",
+        protocols = "Http"
+    )
+    @ApiImplicitParam(name = "token", value="토큰", required = true)
+    @PostMapping("/ckEmailToken")
+    public ModelMap ckEmailToken(@RequestParam String token){
+        ModelMap modelMap = new ModelMap();
+        modelMap = homeService.ckEmailToken(token);
         return modelMap;
     }
 }
