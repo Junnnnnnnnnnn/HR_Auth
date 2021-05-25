@@ -39,25 +39,33 @@ public class HomeService {
 
     public ModelMap getToken(RequestAuthModel model, BindingResult bindingResult){
         ModelMap modelMap = new ModelMap();
+        MemberModel member = homeDao.getMember(model.getId());
         if(!bindingResult.hasErrors()){
-            String accessToken = new String();
-            String refreshToken = jwt.createRefreshToken(model.getId());
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("id", model.getId());
-            map.put("pass", model.getPass());
-            map.put("token", refreshToken);
-            map.put("date",addDateHour(10));
-            if(homeDao.updateToken(map) == 1){
-                accessToken = jwt.createAccessToken("member", homeDao.getMember(model.getId()));
-                modelMap.put("condition", true);
-                modelMap.put("message","토큰 발급 완료");
-                modelMap.put("accessToken", accessToken);
-                modelMap.put("refreshToken", refreshToken);
-            }else{
+            if(member == null){
                 modelMap.put("condition", false);
                 modelMap.put("message","아이디 혹은 패스워드가 다름니다.");
                 modelMap.put("accessToken", null);
                 modelMap.put("refreshToken", null);
+            }else if(member.getMember_status().equals("E")){
+                modelMap.put("condition", false);
+                modelMap.put("message","{'code':'001','text':'인증되지 않은 아이디입니다.'}");
+                modelMap.put("accessToken", null);
+                modelMap.put("refreshToken", null);
+            }else{
+                String accessToken = new String();
+                String refreshToken = jwt.createRefreshToken(model.getId());
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put("id", model.getId());
+                map.put("pass", model.getPass());
+                map.put("token", refreshToken);
+                map.put("date",addDateHour(10));
+                if(homeDao.updateToken(map) == 1){
+                    accessToken = jwt.createAccessToken("member", member);
+                    modelMap.put("condition", true);
+                    modelMap.put("message","토큰 발급 완료");
+                    modelMap.put("accessToken", accessToken);
+                    modelMap.put("refreshToken", refreshToken);
+                }
             }
         }else{
             modelMap.put("condition",false);
