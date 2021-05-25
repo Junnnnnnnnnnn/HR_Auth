@@ -44,6 +44,7 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+mvnw
 .flattened-pom.xml
 
 ### vscode ###
@@ -57,3 +58,6 @@ buildNumber.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/vscode,java,maven
 
+### docker ###
+*docker-compose*
+*Docker*
