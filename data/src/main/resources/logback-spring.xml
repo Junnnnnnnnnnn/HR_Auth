@@ -40,11 +40,11 @@
     <!-- Enable the Console and Sentry appenders, Console is provided as an example
  of a non-Sentry logger that is set to a different logging threshold -->
 
-    <logger name="com.crawliing.data">
+    <logger name="com.hr.auth">
         <appender-ref ref="Console" />
     </logger>
     <root level="INFO">
-        <!-- <appender-ref ref="Console" /> -->
+        <appender-ref ref="Console" />
         <appender-ref ref="Sentry" />
     </root>
     
