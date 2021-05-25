@@ -30,6 +30,9 @@
 hs_err_pid*
 
 ### Maven ###
+*.properties
+DataApplicationTests.java
+application.properties
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -53,3 +56,4 @@ buildNumber.properties
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/vscode,java,maven
+
