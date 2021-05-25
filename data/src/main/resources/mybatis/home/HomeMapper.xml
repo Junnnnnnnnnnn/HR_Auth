@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hr.auth.home.dao.HomeDao"> 
+    <select id="getTime" resultType="String">
+        select
+            now()
+        from dual
+    </select>
+    <select id="getLoginResult" resultType="Map" parameterType="RequestLoginModel">
+        select
+            a.MEMBER_ID,
+            a.MEMBER_NAME
+        from MEMBER a
+        where 1=1
+        and a.MEMBER_STATUS = 'Y'
+        and a.MEMBER_ID = #{id} and aes_decrypt(unhex(a.MEMBER_PASS),sha2(a.MEMBER_ID,512)) = #{pass}
+    </select>
+    <update id="updateToken" parameterType="Map">
+        update MEMBER a
+        set a.MEMBER_TOKEN = #{token}
+        where 1=1
+        and a.MEMBER_ID = #{id}
+        and aes_decrypt(unhex(a.MEMBER_PASS),sha2(a.MEMBER_ID,512)) = #{pass}
+    </update>
+    <select id="ckApiKey" resultType="Integer" parameterType="RequestAuthModel">
+        select
+            count(1)
+        from ADMIN_APIKEY a
+        where 1=1
+        and a.API_KEY = #{api_key}
+    </select>
+    <select id="getMember" resultType="MemberModel" parameterType="String">
+        select *
+        from MEMBER a
+        where 1=1
+        and a.MEMBER_STATUS in ('Y','E')
+        and a.MEMBER_ID = #{member_id}
+    </select>
+    <select id="getMemberId" resultType="String" parameterType="String">
+        select
+            a.MEMBER_ID
+        from MEMBER a
+        where 1=1
+        and a.MEMBER_STATUS = 'Y'
+        and a.MEMBER_TOKEN = #{refreshToken}
+    </select>
+    <insert id="insertMember" parameterType="MemberModel">
+        insert into MEMBER(MEMBER_ID,MEMBER_NAME,MEMBER_PASS,MEMBER_CERT,MEMBER_STATUS,MEMBER_PHOTO)
+        value(
+            #{member_id},
+            #{member_name},
+            hex(aes_encrypt(#{member_pass},sha2(#{member_id},512))),
+            #{member_cert},
+            'E',
+            <choose>
+                <when test="member_photo != null and member_photo != ''">
+                    #{member_photo}
+                </when>
+                <otherwise>
+                    null
+                </otherwise>
+            </choose>
+        )
+    </insert>
+    <update id="updateMemberStatus" parameterType="String">
+        update MEMBER a
+        set a.MEMBER_STATUS = #{member_status}
+        where 1=1
+        and a.MEMBER_ID = #{member_id}
+    </update>
+    <delete id="deleteMember" parameterType="String">
+        delete
+        from MEMBER
+        where MEMBER_ID = #{member_id};
+    </delete>
+    
+</mapper>
